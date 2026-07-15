@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>When Crises Collide — Group 04 · E501 Managerial Economics</title>
+<style>
+:root{
+  --bg:#0b0e14; --bg2:#10141d; --panel:#141a26; --line:rgba(232,228,218,.10);
+  --ink:#ece8dd; --muted:#93a0b4; --faint:#5b6678;
+  --drought:#f0a83c; --flood:#43c6d0; --oil:#ff5d3b; --fx:#b78bff; --gold:#f5c542;
+  --serif:"Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Code","JetBrains Mono",Consolas,"Courier New",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1200px 700px at 78% -10%,rgba(240,168,60,.07),transparent 60%),
+             radial-gradient(1000px 800px at -10% 110%,rgba(67,198,208,.06),transparent 60%),
+             radial-gradient(900px 600px at 50% 120%,rgba(255,93,59,.05),transparent 60%);}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:linear-gradient(rgba(232,228,218,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(232,228,218,.025) 1px,transparent 1px);
+  background-size:72px 72px;}
+
+/* ---------- slide engine ---------- */
+.slide{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:6vh 7vw 9vh;opacity:0;visibility:hidden;z-index:1;pointer-events:none;will-change:transform,opacity}
+.slide.active{z-index:2;pointer-events:auto}
+.slide-inner{width:100%;max-width:1280px;display:flex;flex-direction:column;align-items:center;gap:2.2vh;text-align:center}
+
+/* ---------- typography ---------- */
+.kicker{font-family:var(--mono);font-size:clamp(10px,1.15vw,14px);letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.kicker::before{content:"— "}.kicker::after{content:" —"}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,4.6vw,64px);line-height:1.08;letter-spacing:-.01em}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.1vw,44px);line-height:1.12;letter-spacing:-.01em}
+.sub{font-size:clamp(13px,1.35vw,19px);color:var(--muted);line-height:1.55;max-width:62ch}
+.takeaway{font-size:clamp(13px,1.3vw,18px);color:var(--ink);line-height:1.5;max-width:74ch;
+  background:rgba(245,197,66,.06);border:1px solid rgba(245,197,66,.22);border-radius:12px;padding:1.4vh 2.4vw}
+.takeaway b{color:var(--gold)}
+.cap{font-size:clamp(10px,1vw,13px);color:var(--faint);font-family:var(--mono);letter-spacing:.06em}
+.big-num{font-family:var(--mono);font-weight:700;color:var(--gold)}
+
+/* ---------- figure cards ---------- */
+.chart-card{background:#fdfcf9;border-radius:14px;padding:14px 18px;box-shadow:0 30px 80px rgba(0,0,0,.55),0 4px 18px rgba(0,0,0,.4);
+  max-width:min(1080px,86vw);display:flex;justify-content:center;align-items:center}
+.chart-card img{max-height:56vh;max-width:100%;height:auto;width:auto;display:block;border-radius:6px}
+.chart-card.tall img{max-height:60vh}
+
+/* ---------- chips / cards / grids ---------- */
+.chiprow{display:flex;gap:1.4vw;flex-wrap:wrap;justify-content:center}
+.chip{font-family:var(--mono);font-size:clamp(11px,1.1vw,15px);padding:.9vh 1.4vw;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--ink);white-space:nowrap}
+.chip b{font-weight:700}
+.chip.amber{border-color:rgba(240,168,60,.5);color:var(--drought)}
+.chip.teal{border-color:rgba(67,198,208,.5);color:var(--flood)}
+.chip.red{border-color:rgba(255,93,59,.5);color:var(--oil)}
+.chip.violet{border-color:rgba(183,140,255,.5);color:var(--fx)}
+.cards{display:grid;gap:1.6vw;width:100%}
+.cards.c3{grid-template-columns:repeat(3,1fr)}
+.cards.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1px solid var(--line);
+  border-radius:16px;padding:2.6vh 1.6vw;text-align:left;display:flex;flex-direction:column;gap:1vh}
+.card h3{font-family:var(--serif);font-size:clamp(16px,1.6vw,23px);line-height:1.2}
+.card .n{font-family:var(--mono);font-size:clamp(26px,3.4vw,46px);font-weight:700;line-height:1}
+.card p{font-size:clamp(11px,1.1vw,14.5px);color:var(--muted);line-height:1.5}
+.card .tag{font-family:var(--mono);font-size:clamp(9px,.95vw,12px);letter-spacing:.22em;text-transform:uppercase}
+.bar-row{display:flex;align-items:center;gap:1vw;width:100%;font-family:var(--mono);font-size:clamp(11px,1.1vw,14px)}
+.bar-track{flex:1;height:14px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;width:0}
+
+/* ---------- terminal / code ---------- */
+.terminal{width:min(880px,84vw);background:#0d1117;border:1px solid rgba(255,255,255,.12);border-radius:14px;
+  box-shadow:0 30px 90px rgba(0,0,0,.6);text-align:left;overflow:hidden}
+.term-head{display:flex;gap:8px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+.term-head i{width:11px;height:11px;border-radius:50%;display:block}
+.term-head i:nth-child(1){background:#ff5f57}.term-head i:nth-child(2){background:#febc2e}.term-head i:nth-child(3){background:#28c840}
+.term-title{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.terminal pre{padding:18px 22px;font-family:var(--mono);font-size:clamp(10px,1.15vw,15px);line-height:1.75;color:#c9d4e3;white-space:pre-wrap}
+.tl{opacity:0}
+.tl .kw{color:#ff7b72}.tl .st{color:#a5d6ff}.tl .fn{color:#d2a8ff}.tl .cm{color:#7d8590}.tl .ok{color:#3fb950}
+.cursor{display:inline-block;width:8px;height:1.1em;background:var(--gold);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- data table ---------- */
+.dtable{border-collapse:collapse;font-family:var(--mono);font-size:clamp(9px,1.05vw,13.5px);background:#fdfcf9;color:#1a1f2b;
+  border-radius:10px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.dtable th{background:#10141d;color:var(--gold);padding:.9vh 1vw;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.dtable td{padding:.75vh 1vw;border-top:1px solid #e6e2d6;white-space:nowrap;text-align:right}
+.dtable td:first-child,.dtable th:first-child{text-align:left}
+.dtable tr{opacity:0}
+.dtable tr.dim td{color:#9aa0ab}
+
+/* ---------- divider slides ---------- */
+.act-num{font-family:var(--mono);font-size:clamp(80px,16vw,220px);font-weight:700;line-height:.9;
+  color:transparent;-webkit-text-stroke:2px rgba(245,197,66,.55)}
+.act-word{font-family:var(--serif);font-size:clamp(28px,4vw,56px);margin-top:-2vh}
+
+/* ---------- title slide ---------- */
+#s0{padding:0}
+.title-bg{position:absolute;inset:0;background:url("assets/cover.jpg") center 30%/cover no-repeat;opacity:.5}
+.title-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,14,20,.55),rgba(11,14,20,.86) 70%,var(--bg))}
+.title-inner{position:relative;z-index:2}
+.rule{width:120px;height:2px;background:var(--gold);margin:1vh auto}
+
+/* ---------- shock orbs (question + collision) ---------- */
+.orb{width:clamp(120px,15vw,190px);aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;gap:4px;
+  justify-content:center;align-items:center;font-family:var(--mono);position:relative;box-shadow:0 0 60px rgba(0,0,0,.5)}
+.orb .oi{font-size:clamp(24px,3vw,40px)}
+.orb .ol{font-size:clamp(10px,1vw,13px);letter-spacing:.18em;font-weight:700}
+.orb.drought{background:radial-gradient(circle at 32% 28%,#ffd98a,#f0a83c 45%,#7a4d12);color:#241500}
+.orb.oil{background:radial-gradient(circle at 32% 28%,#ffab91,#ff5d3b 45%,#7c1d0c);color:#2b0700}
+.orb.fx{background:radial-gradient(circle at 32% 28%,#dcc6ff,#b78bff 45%,#4b2a86);color:#1c0733}
+.orb.flood{background:radial-gradient(circle at 32% 28%,#a8ecf2,#43c6d0 45%,#12555c);color:#032a2e}
+.collide-stage{position:relative;width:min(900px,86vw);height:clamp(220px,32vh,320px);display:flex;justify-content:center;align-items:center}
+.flash-ring{position:absolute;left:50%;top:50%;width:60px;height:60px;border-radius:50%;border:3px solid var(--gold);
+  transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+.mult-num{font-family:var(--mono);font-weight:700;font-size:clamp(44px,7vw,96px);color:var(--gold);line-height:1;text-shadow:0 0 40px rgba(245,197,66,.35)}
+.pcanvas{position:absolute;inset:0;pointer-events:none;z-index:5}
+
+/* ---------- misc ---------- */
+.src-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4vh 1.6vw;width:min(980px,86vw)}
+.src{display:flex;gap:1.2vw;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.6vh 1.4vw;text-align:left}
+.src .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.src b{font-size:clamp(12px,1.2vw,16px);display:block}
+.src span{font-size:clamp(10px,1vw,13px);color:var(--muted);display:block;line-height:1.4}
+.pipe{display:flex;align-items:stretch;gap:1vw;width:min(1060px,88vw)}
+.pipe .step{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:2vh 1vw;display:flex;flex-direction:column;gap:.8vh;align-items:center}
+.pipe .step .ic{font-size:clamp(20px,2.4vw,32px)}
+.pipe .step b{font-size:clamp(11px,1.15vw,15px)}
+.pipe .step span{font-size:clamp(9px,.95vw,12px);color:var(--muted);line-height:1.45}
+.pipe .arrow{align-self:center;font-family:var(--mono);color:var(--gold);font-size:clamp(14px,1.6vw,22px)}
+.video-shell{position:relative;width:min(920px,84vw);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.video-shell video{width:100%;height:100%;object-fit:contain;background:#000}
+.video-fallback{position:absolute;inset:0;display:none;flex-direction:column;gap:1.4vh;justify-content:center;align-items:center;
+  background:radial-gradient(600px 300px at 50% 40%,rgba(245,197,66,.10),transparent),#0d1117;text-align:center;padding:4vh 4vw}
+.video-fallback.show{display:flex}
+.play-badge{width:76px;height:76px;border-radius:50%;border:2px solid var(--gold);display:flex;justify-content:center;align-items:center;font-size:26px;color:var(--gold)}
+
+/* ---------- chrome ---------- */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--oil));width:0;z-index:50;transition:width .4s ease}
+#counter{position:fixed;right:22px;bottom:16px;font-family:var(--mono);font-size:12px;color:var(--faint);z-index:50;letter-spacing:.12em}
+#hint{position:fixed;left:22px;bottom:16px;font-family:var(--mono);font-size:11px;color:var(--faint);z-index:50}
+#notes{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);width:min(900px,92vw);max-height:42vh;overflow:auto;
+  background:rgba(13,17,23,.97);border:1px solid rgba(245,197,66,.35);border-bottom:none;border-radius:16px 16px 0 0;
+  padding:2.2vh 2vw;z-index:60;transition:transform .35s ease;font-size:14px;line-height:1.6;color:var(--ink);text-align:left}
+#notes.open{transform:translate(-50%,0)}
+#notes .nh{font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--gold);margin-bottom:1vh}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40}
+@media (max-width:820px){.cards.c3,.cards.c4{grid-template-columns:1fr 1fr}.src-grid{grid-template-columns:1fr}.pipe{flex-direction:column}.pipe .arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="flash"></div>
+
+<!-- 0 · TITLE -->
+<section class="slide" id="s0" data-anim="title" data-notes="~40s. Assalamu alaikum and good morning. We are Group 04, and our term paper asks a simple question with big consequences: what happens to food prices when two crises hit at the same time?">
+  <div class="title-bg"></div>
+  <div class="slide-inner title-inner">
+    <div class="kicker st">E501 · Managerial Economics · IBA, University of Dhaka</div>
+    <h1 class="st">When Crises Collide</h1>
+    <div class="rule st"></div>
+    <div class="sub st">A data walk through droughts, floods, oil shocks and currency crises in the staple food markets of <b>Bangladesh, India and Pakistan</b>, 1998–2026</div>
+    <div class="chiprow st" style="margin-top:1vh">
+      <span class="chip">Group 04 · MBA 67D</span><span class="chip">Ehsanul · Faysal · Nayeem · Hasan</span>
+    </div>
+  </div>
+</section>
+
+<!-- 1 · HOOK: PAKISTAN 2022 -->
+<section class="slide" id="s1" data-anim="cards" data-notes="~45s. Start with the extreme version. In 2022 Pakistan had a catastrophic monsoon flood AND the rupee lost a third of its value — in the same year. Within months, wheat was 134% more expensive than a year before. This pile-up has a fashionable name: the polycrisis. Our paper puts a number on it.">
+  <div class="slide-inner">
+    <div class="kicker st">The extreme version · Pakistan, 2022</div>
+    <h2 class="st">One year. Two catastrophes. <span style="color:var(--oil)">One grocery bill.</span></h2>
+    <div class="cards c3" style="margin-top:1.5vh">
+      <div class="card st"><span class="tag" style="color:var(--flood)">Shock one</span><div class="n" style="color:var(--flood)">FLOOD</div><p>the 2022 monsoon submerges a third of the country</p></div>
+      <div class="card st"><span class="tag" style="color:var(--fx)">Shock two</span><div class="n" style="color:var(--fx)">−33%</div><p>the rupee loses a third of its value in the same year</p></div>
+      <div class="card st"><span class="tag" style="color:var(--oil)">The bill</span><div class="n" style="color:var(--oil)">+134%</div><p>year-on-year wheat price inflation by March 2023</p></div>
+    </div>
+    <div class="takeaway st">Economics measures shocks one at a time. <b>2020–2024 refused to arrive in single file.</b></div>
+  </div>
+</section>
+
+<!-- 2 · THE QUESTION -->
+<section class="slide" id="s2" data-anim="converge" data-notes="~35s. So the research question: when two crises arrive together, do their effects simply add — or do they multiply? Three shocks in our data: bad rain, expensive oil, weak currency. The fashionable name for the pile-up is polycrisis — we assign it a numerical value.">
+  <div class="slide-inner">
+    <div class="kicker st">The research question</div>
+    <h2 class="st">When shocks arrive together, do they <span style="color:var(--drought)">add</span> — or <span style="color:var(--oil)">multiply</span>?</h2>
+    <div class="collide-stage" style="height:clamp(190px,26vh,260px)">
+      <div class="orb drought orb-a"><span class="oi">☀</span><span class="ol">DROUGHT / FLOOD</span></div>
+      <div class="orb oil orb-b" style="position:absolute;opacity:0"><span class="oi">🛢</span><span class="ol">OIL SPIKE</span></div>
+      <div class="orb fx orb-c" style="position:absolute;opacity:0"><span class="oi">৳</span><span class="ol">WEAK CURRENCY</span></div>
+    </div>
+    <div class="chiprow st"><span class="chip" id="poly-chip" style="opacity:0;font-size:clamp(12px,1.3vw,17px)">“polycrisis” — we give that word a number</span></div>
+  </div>
+</section>
+
+<!-- 3 · ROADMAP -->
+<section class="slide" id="s3" data-anim="cards" data-notes="~25s. Three acts. Act 1: we collect the data — every series pulled by script from public archives. Act 2: we read the data — every spike and crash located and explained with charts. Act 3: we analyze — one deliberately simple statistical design asks add-or-multiply.">
+  <div class="slide-inner">
+    <div class="kicker st">Three acts</div>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--gold)">Act 01</span><h3>Collect</h3><p>≈1,000 country-months pulled <b>by script</b> from public archives — FAO, IMF, ERA5-Land. Nothing typed by hand.</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">Act 02</span><h3>Read</h3><p>Every spike, crash, flood and devaluation located and explained — ten charts, three countries, three decades.</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">Act 03</span><h3>Analyze</h3><p>One deliberately simple design — local projections with an interaction term — asks: add, or multiply?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · ACT I DIVIDER -->
+<section class="slide" id="s4" data-anim="divider" data-notes="~5s. Act one — collecting the data.">
+  <div class="slide-inner">
+    <div class="act-num st">01</div>
+    <div class="act-word st">Collecting the data</div>
+    <div class="sub st">four sources · three countries · one reproducible pipeline</div>
+  </div>
+</section>
+
+<!-- 5 · SOURCES -->
+<section class="slide" id="s5" data-anim="sources" data-notes="~40s. The ingredients. Retail rice and wheat prices from FAO GIEWS. Exchange rates and Brent crude from the IMF — the Brent series verified against FRED. The world food basket from the FAO Food Price Index. And the weather — rainfall, temperature, soil moisture — from the ERA5-Land reanalysis, a gridded climate dataset.">
+  <div class="slide-inner">
+    <div class="kicker st">Table 1 · The ingredients</div>
+    <h2 class="st">Every column has a public address</h2>
+    <div class="src-grid" style="margin-top:1vh">
+      <div class="src st"><i class="dot" style="background:var(--gold)"></i><div><b>Rice &amp; wheat prices</b><span>retail, national monthly average, local currency — FAO GIEWS</span></div></div>
+      <div class="src st"><i class="dot" style="background:var(--fx)"></i><div><b>Exchange rates</b><span>local currency per USD, period average — IMF IFS</span></div></div>
+      <div class="src st"><i class="dot" style="background:var(--oil)"></i><div><b>Brent crude</b><span>USD per barrel, monthly — IMF PCPS, FRED-verified</span></div></div>
+      <div class="src st"><i class="dot" style="background:var(--gold)"></i><div><b>World food basket</b><span>FAO Food Price Index, 2014–16 = 100</span></div></div>
+      <div class="src st"><i class="dot" style="background:var(--flood)"></i><div><b>Precipitation &amp; temperature</b><span>national monthly means — ERA5-Land reanalysis</span></div></div>
+      <div class="src st"><i class="dot" style="background:var(--flood)"></i><div><b>Soil moisture</b><span>volumetric water content — ERA5-Land</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · PIPELINE -->
+<section class="slide" id="s6" data-anim="pipe" data-notes="~35s. The pipeline. Two Python scripts do everything. Script one authenticates with the Copernicus Climate Data Store, downloads gridded ERA5-Land fields for a country bounding box, collapses the grid to a national monthly mean, fixes the units. Script two pulls Brent and the exchange rate from the IMF API, merges everything on a monthly key, and engineers the derived variables — inflation, shocks, anomalies.">
+  <div class="slide-inner">
+    <div class="kicker st">Appendix A · The reproducible pipeline</div>
+    <h2 class="st">Two scripts rebuild the entire dataset</h2>
+    <div class="pipe" style="margin-top:1vh">
+      <div class="step st"><span class="ic">🔑</span><b>authenticate</b><span>Copernicus CDS API key, written to ~/.cdsapirc</span></div>
+      <div class="arrow st">→</div>
+      <div class="step st"><span class="ic">🛰</span><b>download</b><span>ERA5-Land monthly grids for the country bounding box</span></div>
+      <div class="arrow st">→</div>
+      <div class="step st"><span class="ic">🧹</span><b>standardize</b><span>Kelvin→°C · metres/day→mm/month · grid→national mean</span></div>
+      <div class="arrow st">→</div>
+      <div class="step st"><span class="ic">🌐</span><b>merge</b><span>IMF Brent + exchange rate + FAO index + retail prices</span></div>
+      <div class="arrow st">→</div>
+      <div class="step st"><span class="ic">📊</span><b>engineer</b><span>YoY inflation · oil shock · FX change · anomalies</span></div>
+    </div>
+    <div class="chiprow st"><span class="chip teal">self-contained Python 3</span><span class="chip teal">xarray · pandas · requests · cdsapi</span><span class="chip amber">re-run = regenerate everything</span></div>
+  </div>
+</section>
+
+<!-- 7 · CODE MORPH (showpiece 1) -->
+<section class="slide" id="s7" data-anim="codemorph" data-notes="~50s. Watch closely — this is the whole data collection in one gesture. The script runs… the merge completes… and the code becomes the dataset. 318 monthly rows for Bangladesh. Rice at 11.52 taka a kilo in July 1999, monsoon rainfall in the hundreds of millimetres, oil at 19 dollars, the taka at 49. And the last rows: the taka at 122 — that is 27 years of economic history, assembled without typing a single number by hand.">
+  <div class="slide-inner">
+    <div class="kicker st">From script to dataset — live</div>
+    <div style="position:relative;width:100%;display:flex;justify-content:center;min-height:52vh">
+      <div class="terminal" id="codebox" style="position:absolute;top:0">
+        <div class="term-head"><i></i><i></i><i></i><span class="term-title">build_master_panel.py — Bangladesh</span></div>
+        <pre id="codelines"><span class="tl"><span class="cm"># 1. climate: ERA5-Land → national monthly panel</span></span>
+<span class="tl">clim = pd.<span class="fn">read_csv</span>(<span class="st">'bangladesh_climate_panel_clean.csv'</span>)</span>
+<span class="tl"><span class="cm"># 2. macro: IMF API → Brent crude + BDT/USD</span></span>
+<span class="tl">brent = <span class="fn">fetch_imf_monthly_series</span>(<span class="st">'P_BRENT'</span>, 1998, 2026)</span>
+<span class="tl">fx = <span class="fn">fetch_ifs_exchange_rate</span>(<span class="st">'BD'</span>, 1998, 2026)</span>
+<span class="tl"><span class="cm"># 3. merge every layer on the monthly key</span></span>
+<span class="tl">panel = clim.<span class="fn">merge</span>(prices).<span class="fn">merge</span>(brent).<span class="fn">merge</span>(fx)</span>
+<span class="tl">panel[<span class="st">'rice_yoy_inflation'</span>] = panel.rice.<span class="fn">pct_change</span>(12)</span>
+<span class="tl" id="runline"><span class="ok">$ python build_master_panel.py</span></span>
+<span class="tl" id="doneline"><span class="ok">✓ master panel written — 318 monthly rows</span> <span class="cursor"></span></span></pre>
+      </div>
+      <table class="dtable" id="datatable" style="position:absolute;top:2vh;opacity:0">
+        <tr><th>Date</th><th>Rice BDT</th><th>Wheat BDT</th><th>Precip mm</th><th>Brent $</th><th>BDT/USD</th><th>FAO FPI</th></tr>
+        <tr><td>1999-07</td><td>11.52</td><td>8.57</td><td>520.68</td><td>19.08</td><td>49.34</td><td>52.80</td></tr>
+        <tr><td>1999-08</td><td>11.85</td><td>8.78</td><td>424.77</td><td>20.22</td><td>49.57</td><td>54.60</td></tr>
+        <tr><td>1999-09</td><td>11.82</td><td>8.93</td><td>248.37</td><td>22.54</td><td>49.81</td><td>54.80</td></tr>
+        <tr><td>1999-10</td><td>11.74</td><td>9.12</td><td>185.28</td><td>22.00</td><td>50.04</td><td>53.50</td></tr>
+        <tr><td>1999-11</td><td>11.39</td><td>9.13</td><td>17.22</td><td>24.58</td><td>50.27</td><td>53.50</td></tr>
+        <tr class="dim"><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td><td>⋮</td></tr>
+        <tr><td>2025-11</td><td>54.50</td><td>47.50</td><td>31.28</td><td>63.80</td><td>122.32</td><td>125.20</td></tr>
+        <tr><td>2025-12</td><td>51.00</td><td>46.70</td><td>0.87</td><td>62.54</td><td>122.29</td><td>124.50</td></tr>
+      </table>
+    </div>
+    <div class="cap st" id="codemorph-cap" style="opacity:0">panel_bangladesh_fixed.csv — 318 rows · 1999-07 → 2025-12 · assembled entirely by script</div>
+  </div>
+</section>
+
+<!-- 8 · VIDEO DEMO -->
+<section class="slide" id="s8" data-anim="video" data-notes="~60s (or length of video). This is the actual retrieval. We open the Copernicus Climate Data Store, grab the API key, paste it into the Colab notebook, run — and the reanalysis downloads and lands as a clean CSV. No manual downloads, no copy-paste. Press play.">
+  <div class="slide-inner">
+    <div class="kicker st">Recorded demonstration</div>
+    <h2 class="st">Watch the pipeline pull real weather data</h2>
+    <div class="video-shell st">
+      <video id="demovid" controls preload="metadata" poster="assets/video-poster.jpg">
+        <source src="assets/demo-video.mp4" type="video/mp4">
+      </video>
+      <div class="video-fallback" id="vidfallback">
+        <div class="play-badge">▶</div>
+        <h3 style="font-family:var(--serif);font-size:clamp(16px,1.8vw,24px)">Demo video goes here</h3>
+        <p class="sub" style="max-width:52ch">Record the retrieval with <span style="font-family:var(--mono);color:var(--gold)">era5_video_demo.py</span>, then save it as<br><span style="font-family:var(--mono);color:var(--gold)">assets/demo-video.mp4</span> next to this file — it will play automatically on this slide.</p>
+      </div>
+    </div>
+    <div class="chiprow st"><span class="chip">CDS website → API key</span><span class="chip">Colab → paste key → run</span><span class="chip">NetCDF downloads → clean CSV</span></div>
+  </div>
+</section>
+
+<!-- 9 · AUDIT -->
+<section class="slide" id="s9" data-anim="cards" data-notes="~35s. Before anything was estimated, every column passed a checking protocol. Derived columns were recomputed from their parents — the July 2008 oil price, the June 2023 rupee, the FAO record of March 2022 — all matched. Event signatures: the 2007-08 crisis must be visible in every rice series, and it is. And cross-file comparisons caught real defects — one early climate block had winter too wet to be Bangladesh; the audit flagged it, we re-pulled the data.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 2.5 · Correcting errors and anomalies</div>
+    <h2 class="st">Nothing was estimated before everything was audited</h2>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--gold)">Check 1</span><h3>Recompute from parents</h3><p>July-2008 Brent · June-2023 rupee · the taka’s 2024 crawl · March-2022 FAO record — <b>all matched</b></p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">Check 2</span><h3>Event signatures</h3><p>the 2007–08 crisis <b>must</b> be visible in every rice series — and it is</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">Check 3</span><h3>Cross-file comparisons</h3><p>one defective climate block failed the audit — <b>“winter is too wet to be Bangladesh”</b> → re-pulled</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · THREE PANELS -->
+<section class="slide" id="s10" data-anim="bars" data-notes="~30s. The output: three monthly panels. Bangladesh: 318 rows from July 1999. India: 320 rows to February 2026. Pakistan: the longest — 342 rows from January 1998, though its price series start later, which the estimation simply respects. Fifteen variables each, same schema.">
+  <div class="slide-inner">
+    <div class="kicker st">Appendix B · The country panels</div>
+    <h2 class="st">Three countries, one schema, <span class="big-num">980</span> country-months</h2>
+    <div style="width:min(880px,84vw);display:flex;flex-direction:column;gap:2vh;margin-top:1vh">
+      <div class="bar-row st"><span style="width:130px;text-align:right">Bangladesh</span><div class="bar-track"><div class="bar-fill" data-w="93" style="background:linear-gradient(90deg,#2e7d32,#69b76d)"></div></div><span style="width:210px;text-align:left"><b>318</b> rows · 1999-07 → 2025-12</span></div>
+      <div class="bar-row st"><span style="width:130px;text-align:right">India</span><div class="bar-track"><div class="bar-fill" data-w="94" style="background:linear-gradient(90deg,#b06f09,#f0a83c)"></div></div><span style="width:210px;text-align:left"><b>320</b> rows · 1999-07 → 2026-02</span></div>
+      <div class="bar-row st"><span style="width:130px;text-align:right">Pakistan</span><div class="bar-track"><div class="bar-fill" data-w="100" style="background:linear-gradient(90deg,#0f6a73,#43c6d0)"></div></div><span style="width:210px;text-align:left"><b>342</b> rows · 1998-01 → 2026-06</span></div>
+    </div>
+    <div class="chiprow st"><span class="chip">15 variables each</span><span class="chip">prices · climate · Brent · FX · CPI · FAO</span><span class="chip amber">Pakistan: early price months missing by design</span></div>
+  </div>
+</section>
+
+<!-- 11 · ACT II DIVIDER -->
+<section class="slide" id="s11" data-anim="divider" data-notes="~5s. Act two — reading the data. Ten charts; every episode located and explained.">
+  <div class="slide-inner">
+    <div class="act-num st">02</div>
+    <div class="act-word st">Reading the data</div>
+    <div class="sub st">every spike, crash, flood and devaluation — located and explained</div>
+  </div>
+</section>
+
+<!-- 12 · FIG 1 PRICES -->
+<section class="slide" id="s12" data-anim="draw" data-notes="~60s. Figure 1 — the paper’s opening exhibit. Bangladesh on top: calm until 2007, then rice jumps 72% in twelve months — the world food crisis, India’s export ban, two floods and Cyclone Sidr at once. India in the middle: the same world crisis barely registers — a long procurement staircase instead. Pakistan at the bottom: it needs its own vertical scale, and that IS the finding. Same monsoon system, three utterly different price histories — the difference is institutions, not weather.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 1 · Three decades of staple prices</div>
+    <div class="chart-card tall st reveal-x"><img src="assets/fig1.png" alt="Retail price of rice and wheat, indexed, three country panels"></div>
+    <div class="takeaway st">Same monsoon, three price histories: <b>Bangladesh 2008 (+72% rice in 12 months)</b>, India’s staircase, Pakistan’s own scale — the separation is <b>institutional, not meteorological</b>.</div>
+  </div>
+</section>
+
+<!-- 13 · FIG 2 BRENT -->
+<section class="slide" id="s13" data-anim="brent" data-notes="~35s. Figure 2 — oil, the dataset’s metronome. Five episodes cross our 25% year-over-year threshold: the $133.6 peak of July 2008, the $32 shale-glut low of January 2016, the $26.8 pandemic collapse of April 2020, the $117.7 invasion spike of June 2022 — and the sample doesn’t end quietly: about $106 by May 2026.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 2 · The world oil price</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig2.png" alt="Brent crude 1998-2026 with five major episodes"></div>
+    <div class="chiprow st">
+      <span class="chip red ep">Jul-08 · $133.6</span><span class="chip red ep">Jan-16 · $32.0</span><span class="chip red ep">Apr-20 · $26.8</span><span class="chip red ep">Jun-22 · $117.7</span><span class="chip red ep">2026 · ~$106</span>
+    </div>
+    <div class="takeaway st">The “oil spike” state — <b>Brent +25% year-over-year</b> — switches on at very different moments of each country’s local story. That asynchrony is what makes the interaction measurable.</div>
+  </div>
+</section>
+
+<!-- 14 · FIG 3 FAO -->
+<section class="slide" id="s14" data-anim="fao" data-notes="~25s. Figure 3 — the world’s grocery bill in one line. Two great waves: 2008 and the 2011 secondary peak at 137.7. The long decline to 84.9 in January 2016 is when local prices flatten. And the vertical leap to 160.2 in March 2022 — the highest reading in the index’s history. It enters our regressions as a control, so anything we call a local drought effect is over and above world markets.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 3 · World food prices</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig3.png" alt="FAO Food Price Index with two great waves and a record point"></div>
+    <div class="chiprow st"><span class="chip">Feb-11 · 137.7</span><span class="chip">Jan-16 · 84.9 trough</span><span class="chip red" id="fao-record">Mar-22 · <b>160.2</b> · all-time record</span></div>
+  </div>
+</section>
+
+<!-- 15 · FIG 4 FX -->
+<section class="slide" id="s15" data-anim="fx" data-notes="~40s. Figure 4 — three currencies, three regimes. Bangladesh: a quasi-peg, long flats with administered steps, crawling to 117.9 in 2024. India: a managed float, a steady 2.9% a year glide. Pakistan: repeated crisis — 60 to 80 in 2008, the 2018-19 slide, then collapse from 153 to 298.5 by August 2023. Our depreciation state — 8% a year or faster — is on in 31% of Pakistani months versus 18% for the others. The vulnerability ranking is visible before any economics.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 4 · Three currencies, three regimes</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig4.png" alt="Exchange rates against the dollar, three panels"></div>
+    <div class="chiprow st">
+      <span class="chip fxchip">🇧🇩 quasi-peg · decision-based stability</span><span class="chip fxchip">🇮🇳 managed float · ~2.9%/yr glide</span><span class="chip fxchip">🇵🇰 repeated crisis · 153 → 298.5 in 2022-23</span>
+    </div>
+    <div class="takeaway st">Depreciation-state frequency: <b>Pakistan 31% of months</b> vs 18% in Bangladesh and India — the vulnerability ranking is visible before any economics.</div>
+  </div>
+</section>
+
+<!-- 16 · FIG 5 PRECIP (rain) -->
+<section class="slide" id="s16" data-anim="rain" data-notes="~45s. Figure 5 — the shocks themselves. Each month is compared to its own calendar month’s history — a z-score. At or below minus one: drought. At or above plus one: flood. Worked example from the paper: August 2022, Pakistan — 140.2mm against an August mean of 94.6 and a standard deviation of 33.8 — z equals +1.35, a flood month, the month Sindh went under. Roughly one month in seven is abnormal — 254 shock months in total. And notice 2022-23 in Pakistan: flood bars followed within a year by drought bars near minus two.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 5 · The impact of rains</div>
+    <div class="chart-card st reveal-x" style="position:relative"><img src="assets/fig5.png" alt="Monthly precipitation anomalies, z-scores, three countries"><canvas class="pcanvas" id="raincanvas"></canvas></div>
+    <div class="chiprow st"><span class="chip amber">drought: z ≤ −1</span><span class="chip teal">flood: z ≥ +1</span><span class="chip">254 abnormal months ≈ 1 in 7</span><span class="chip">Aug-22 Sindh: (140.2−94.6)/33.8 = <b>+1.35</b></span></div>
+  </div>
+</section>
+
+<!-- 17 · FIG 6 INFLATION -->
+<section class="slide" id="s17" data-anim="draw" data-notes="~35s. Figure 6 — all six inflation histories on one page. Read the peaks. Bangladesh: 74.7 rice, 128.9 wheat — both 2008. India: 27.9 and 36.9 — the two lowest peaks on the page. Pakistan: the only country whose two staples peaked in two different crises, fifteen years apart — rice at 159 in June 2008, wheat at 134.5 in March 2023. And between the peaks: the Indian panels sit between minus five and plus fifteen for twenty years, while Pakistan spends entire years above forty. Volatility is a national characteristic.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 6 · Six inflation histories</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig6.png" alt="Year-on-year staple inflation, all six country-staple series"></div>
+    <div class="chiprow st"><span class="chip">🇧🇩 74.7 / 128.9 — both 2008</span><span class="chip">🇮🇳 27.9 / 36.9 — lowest on the page</span><span class="chip red">🇵🇰 159.0 (2008) / 134.5 (2023)</span></div>
+  </div>
+</section>
+
+<!-- 18 · FIG 7 POLYCRISIS MONTHS -->
+<section class="slide" id="s18" data-anim="strikes" data-notes="~45s. Figure 7 — the bridge to the analysis. Every month where a climate shock coincided with a macroeconomic stress state. Red: drought during an oil spike — 27 months. Blue: flood during depreciation — 35. Ochre: drought during depreciation — 29. Ninety-one polycrisis months in total. And look WHERE they sit: Pakistan’s strip after 2018 is the densest — the polycrisis was not evenly distributed; it concentrated in one country. The next section asks one systematic question about these marked months: what happened to prices next?">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 7 · When shocks overlapped</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig7.png" alt="Every month in which a climate shock coincided with a macroeconomic stress state"></div>
+    <div class="chiprow st">
+      <span class="chip red strike"><b class="cnt" data-to="27">0</b> drought × oil</span>
+      <span class="chip teal strike"><b class="cnt" data-to="35">0</b> flood × depreciation</span>
+      <span class="chip amber strike"><b class="cnt" data-to="29">0</b> drought × depreciation</span>
+      <span class="chip strike" style="border-color:var(--gold)"><b class="cnt" data-to="91">0</b> polycrisis months</span>
+    </div>
+    <div class="takeaway st">The polycrisis was <b>not evenly distributed</b> — it concentrated in one country: Pakistan’s strip is the densest after 2018.</div>
+  </div>
+</section>
+
+<!-- 19 · ACT III DIVIDER -->
+<section class="slide" id="s19" data-anim="divider" data-notes="~5s. Act three — analyzing. One deliberately simple design over everything the charts showed.">
+  <div class="slide-inner">
+    <div class="act-num st">03</div>
+    <div class="act-word st">Analyzing the data</div>
+    <div class="sub st">one deliberately simple design, run over everything the charts showed</div>
+  </div>
+</section>
+
+<!-- 20 · METHODOLOGY -->
+<section class="slide" id="s20" data-anim="method" data-notes="~50s. The tool is the local projection — Jordà 2005. It sounds technical; it isn’t. For each horizon — zero months ahead up to twelve — we regress the cumulative change in the staple price on shock dummies: was this a drought month, a flood month, a depreciation episode — and, the whole point, the PRODUCTS of the climate dummies with the macro states. Controls: each market’s own recent inflation, world oil and world food prices, fixed effects for each of the six markets and each calendar month. Thirteen small regressions, about 1,657 observations each. The product term answers add-or-multiply directly. And causality does heavy lifting on the climate side: rice prices cannot cause the weather.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 4.1 · Local projections (Jordà, 2005)</div>
+    <h2 class="st">Prices after a shock month vs prices after an ordinary month</h2>
+    <div class="card st" style="width:min(880px,86vw);text-align:center;background:rgba(255,255,255,.03)">
+      <div style="font-family:var(--mono);font-size:clamp(12px,1.5vw,20px);line-height:2" id="eq">
+        <span class="eqp">Δ<sub>h</sub> price</span> <span class="eqp">=</span> <span class="eqp">β<sub>h</sub> · <span style="color:var(--drought)">Shock</span></span> <span class="eqp">+</span> <span class="eqp" style="background:rgba(245,197,66,.12);border-radius:8px;padding:2px 8px">γ<sub>h</sub> · <span style="color:var(--drought)">Shock</span> <span style="color:var(--oil)">× State</span></span> <span class="eqp">+ controls + ε</span>
+      </div>
+    </div>
+    <div class="chiprow st"><span class="chip">13 regressions · h = 0…12</span><span class="chip">≈ 1,657 obs each</span><span class="chip">month-clustered SEs</span><span class="chip amber">γ answers add-or-multiply directly</span></div>
+    <div class="takeaway st">Causality’s heavy lift: <b>rice prices cannot cause the weather.</b> Macro states read as “the total effect of being in such an episode.”</div>
+  </div>
+</section>
+
+<!-- 21 · SHOCK DEFINITIONS -->
+<section class="slide" id="s21" data-anim="cards" data-notes="~30s. The definitions, kept deliberately simple. A drought or flood month: rainfall at least one standard deviation from that calendar month’s own history. An oil spike: Brent up 25 percent year-over-year. Currency stress: depreciation running at 8 percent a year or faster.">
+  <div class="slide-inner">
+    <div class="kicker st">The shocks, defined</div>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--drought)">Climate</span><div class="n" style="color:var(--drought)">|z| ≥ 1</div><p>monthly rainfall vs its <b>own calendar month’s</b> history — drought at ≤ −1, flood at ≥ +1</p></div>
+      <div class="card st"><span class="tag" style="color:var(--oil)">Oil</span><div class="n" style="color:var(--oil)">+25%</div><p>year-over-year jump in Brent — the “oil spike” state</p></div>
+      <div class="card st"><span class="tag" style="color:var(--fx)">Currency</span><div class="n" style="color:var(--fx)">≥ 8%/yr</div><p>depreciation running at 8 percent a year or faster</p></div>
+    </div>
+    <div class="sub st">Deliberately simple — the question is what the <i>combinations</i> do.</div>
+  </div>
+</section>
+
+<!-- 22 · FIG 8 STANDALONE -->
+<section class="slide" id="s22" data-anim="draw" data-notes="~40s. Figure 8 — what one shock does alone, everything else averaged out. A drought month: about 3 percent by six months, 3.9 by twelve. A flood month: about the same. A depreciation episode hurts most: 6 percent by twelve, significant at one percent. Notice the shapes — they climb steadily rather than jump, because grain is storable and costs pass along over quarters. And notice the sizes: moderate. No single ordinary shock produces a crisis. Whatever made 2008 and 2023 catastrophic is not in this figure.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 8 · Each shock alone, pooled panel, 90% bands</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig8.png" alt="Impulse responses to each shock alone"></div>
+    <div class="chiprow st">
+      <span class="chip amber">drought → <b>+<span class="cnt" data-to="3.9" data-dec="1">0</span>%</b> by 12m</span>
+      <span class="chip teal">flood → <b>+<span class="cnt" data-to="3.7" data-dec="1">0</span>%</b> by 12m</span>
+      <span class="chip violet">depreciation → <b>+<span class="cnt" data-to="6.0" data-dec="1">0</span>%</b> by 12m</span>
+    </div>
+  </div>
+</section>
+
+<!-- 23 · SINGLE SHOCKS ARE SURVIVABLE -->
+<section class="slide" id="s23" data-anim="bignum" data-notes="~20s. So: single shocks are survivable. Single-digit percentages, spread over a year. Moderate. Nothing here explains a catastrophe — which sets up the real question.">
+  <div class="slide-inner">
+    <div class="kicker st">The baseline</div>
+    <h1 class="st">Single shocks are <span style="color:var(--flood)">survivable</span>.</h1>
+    <div class="sub st" style="font-size:clamp(15px,1.7vw,22px)">Three to six percent, spread over a year — moderate, manageable.<br>No single ordinary shock explains 2008 or 2023. <b style="color:var(--gold)">So what does?</b></div>
+  </div>
+</section>
+
+<!-- 24 · THE MULTIPLIER (showpiece 2) -->
+<section class="slide" id="s24" data-anim="collision" data-notes="~60s. Here is the answer — watch. A drought arrives [orb enters]… and at the same moment, an oil spike [orb enters]… [collision] — SEVEN extra percentage points. Beyond the sum of the parts. p = 0.017 at six months, 7.9 at twelve. Together the two shocks cause multiple times the drought’s usual damage. And the currency panel? Nothing — the interaction is 0.2 with p = 0.93. The multiplier is real, and it is selective.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 4.3 · The multiplier effect</div>
+    <div class="collide-stage" id="collide-stage">
+      <canvas class="pcanvas" id="burstcanvas"></canvas>
+      <div class="orb drought" id="orb-drought" style="position:absolute;left:0"><span class="oi">☀</span><span class="ol">DROUGHT MONTH</span></div>
+      <div class="orb oil" id="orb-oil" style="position:absolute;right:0"><span class="oi">🛢</span><span class="ol">OIL SPIKE</span></div>
+      <div class="flash-ring" id="ring1"></div>
+      <div class="flash-ring" id="ring2"></div>
+    </div>
+    <div id="mult-result" style="opacity:0;display:flex;flex-direction:column;align-items:center;gap:1vh">
+      <div class="mult-num">+<span id="mult-num">0.0</span> pp</div>
+      <div class="sub" style="max-width:56ch">extra staple inflation <b>beyond the sum of the parts</b> when drought meets expensive oil — p = 0.017 at 6m · 7.9 at 12m</div>
+    </div>
+    <div class="chiprow" id="mult-null" style="opacity:0"><span class="chip violet">drought × weak currency? it just <b>adds</b> — interaction +0.2, p = 0.93</span></div>
+  </div>
+</section>
+
+<!-- 25 · FIG 9 PROOF -->
+<section class="slide" id="s25" data-anim="draw" data-notes="~35s. And here it is in the data. Left panel: the grey line is a drought in normal times — one point, insignificant. The red line is the same drought during an oil spike — they separate by 7.1 points at six months. Right panel: the same construction for depreciation — the blue line never leaves the grey band. The amplification is specific to oil.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 9 · Do simultaneous shocks multiply?</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig9.png" alt="Drought effect in normal times versus during an oil spike and during depreciation"></div>
+    <div class="chiprow st"><span class="chip red">oil: <b>yes — multiplies</b> (+7.1 pp, p=0.017)</span><span class="chip violet">currency: <b>no — just adds</b> (+0.2, p=0.93)</span></div>
+  </div>
+</section>
+
+<!-- 26 · MECHANISM: DIESEL -->
+<section class="slide" id="s26" data-anim="cards" data-notes="~40s. Why oil and not the currency? The economics are almost material. When the rain fails, every response runs on diesel: tube-wells pump groundwater, fertilizer substitutes for what dry soil cannot provide, trucks move grain from surplus to deficit districts. An oil spike raises the price of exactly those responses at exactly the moment they are needed. A weak currency raises the price of everything tradable roughly equally — it hurts, but it doesn’t single out the drought-fighting toolkit. Amplification happens when the shock and its remedy compete for the same input.">
+  <div class="slide-inner">
+    <div class="kicker st">The mechanism — why oil?</div>
+    <h2 class="st">Everything that fights a drought <span style="color:var(--oil)">runs on diesel</span></h2>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="ic" style="font-size:clamp(22px,2.6vw,34px)">🚜</span><h3>Tube-wells</h3><p>pump groundwater when the rain fails — diesel, litre by litre</p></div>
+      <div class="card st"><span class="ic" style="font-size:clamp(22px,2.6vw,34px)">🧪</span><h3>Fertiliser</h3><p>substitutes for what dry soil cannot provide — made and moved with fuel</p></div>
+      <div class="card st"><span class="ic" style="font-size:clamp(22px,2.6vw,34px)">🚚</span><h3>Trucks</h3><p>move grain from surplus to deficit districts — freight priced in fuel</p></div>
+    </div>
+    <div class="takeaway st">Amplification happens when <b>the shock and its remedy compete for the same input.</b> A weak currency taxes everything equally — so it merely adds.</div>
+  </div>
+</section>
+
+<!-- 27 · ROBUSTNESS -->
+<section class="slide" id="s27" data-anim="chips" data-notes="~25s. And it survives the sceptics. Remove the pandemic months: 7.4, still significant. Move the oil threshold: 8.4 at a 20 percent cutoff, 6.2 at 30. And it concentrates in wheat — the diesel-and-imports staple: 11.6 points, against an insignificant 2.2 for rice.">
+  <div class="slide-inner">
+    <div class="kicker st">Robustness</div>
+    <h2 class="st">The multiplier survives the sceptics</h2>
+    <div class="cards c4" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--gold)">Ex-pandemic</span><div class="n" style="color:var(--gold)">7.4</div><p>p = 0.018</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">20% oil cutoff</span><div class="n" style="color:var(--gold)">8.4</div><p>threshold moved down</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">30% oil cutoff</span><div class="n" style="color:var(--gold)">6.2</div><p>threshold moved up</p></div>
+      <div class="card st"><span class="tag" style="color:var(--oil)">Wheat only</span><div class="n" style="color:var(--oil)">11.6</div><p>p = 0.002 · rice: 2.2 (n.s.)</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 28 · FIG 10 HETEROGENEITY -->
+<section class="slide" id="s28" data-anim="draw" data-notes="~40s. Figure 10 — same shock, three institutions. Depreciation on the left: Pakistan reprices to its currency in real time — 10.5 percent by twelve months; India about half; Bangladesh statistically nothing — a quasi-peg rarely switches the state on, and its two step-devaluations came packaged with import financing and open-market sales. Floods reverse the order: Bangladesh 8.5 at twelve — the largest climate numbers in the project, exactly what a delta should show. India is flat against nearly everything — read that not as absence of shocks, but presence of machinery.">
+  <div class="slide-inner">
+    <div class="kicker st">Figure 10 · Same shock, three institutions</div>
+    <div class="chart-card st reveal-x"><img src="assets/fig10.png" alt="Country-level responses: depreciation episodes and flood months"></div>
+    <div class="chiprow st"><span class="chip violet">depreciation: 🇵🇰 10.5 · 🇮🇳 5.9 · 🇧🇩 ~0</span><span class="chip teal">flood: 🇧🇩 8.5 · 🇵🇰 ~2 · 🇮🇳 flat</span></div>
+  </div>
+</section>
+
+<!-- 29 · THREE INSTITUTIONS -->
+<section class="slide" id="s29" data-anim="cards" data-notes="~30s. The summary of heterogeneity. Pakistan’s exposure is the currency. Bangladesh’s exposure is water. And India’s insulation is real — procurement prices, buffer stocks, public distribution, export bans when needed — purchasable, and, as the fiscal-cost literature makes clear, not free.">
+  <div class="slide-inner">
+    <div class="kicker st">Institutions do more work than geography</div>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--fx)">🇵🇰 Pakistan</span><h3>Currency is the exposure</h3><p>an import-dependent food economy repricing to its exchange rate in real time</p></div>
+      <div class="card st"><span class="tag" style="color:var(--flood)">🇧🇩 Bangladesh</span><h3>Water is the exposure</h3><p>floods move its prices most — the largest climate estimates in the project</p></div>
+      <div class="card st"><span class="tag" style="color:var(--gold)">🇮🇳 India</span><h3>Machinery is the answer</h3><p>procurement, buffer stocks, PDS, export bans — insulation is real, purchasable, <b>not free</b></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 30 · TABLE 5 -->
+<section class="slide" id="s30" data-anim="table" data-notes="Backup/Q&A slide — ~15s unless asked. Every estimate behind the figures, with month-clustered standard errors. Star means significance. Walk the first four rows if asked about methodology; the country rows if asked about heterogeneity.">
+  <div class="slide-inner">
+    <div class="kicker st">Table 5 · The estimates behind Figures 8–10</div>
+    <table class="dtable st" id="t5" style="font-size:clamp(10px,1.15vw,15px)">
+      <tr><th>Effect (pooled unless noted)</th><th>3 months</th><th>6 months</th><th>12 months</th></tr>
+      <tr><td>Drought month</td><td>1.6</td><td>3.0*</td><td>3.9*</td></tr>
+      <tr><td>Flood month</td><td>1.8*</td><td>3.4**</td><td>3.7*</td></tr>
+      <tr><td>Depreciation episode</td><td>3.4**</td><td>4.7**</td><td>6.0**</td></tr>
+      <tr style="background:rgba(255,93,59,.12)"><td><b>Drought × oil spike — the multiplier</b></td><td>3.1</td><td><b>7.1*</b></td><td><b>7.9*</b></td></tr>
+      <tr><td>Drought × depreciation — the null</td><td>0.4</td><td>0.2</td><td>−1.8</td></tr>
+      <tr><td>Depreciation, Pakistan only</td><td>6.3**</td><td>8.9**</td><td>10.5**</td></tr>
+      <tr><td>Depreciation, India only</td><td>1.6*</td><td>2.3**</td><td>5.9**</td></tr>
+      <tr><td>Depreciation, Bangladesh only</td><td>1.1</td><td>1.4</td><td>0.2</td></tr>
+      <tr><td>Flood month, Bangladesh only</td><td>3.7**</td><td>7.4**</td><td>8.5*</td></tr>
+      <tr><td>Drought month, Pakistan only</td><td>3.4</td><td>7.5*</td><td>2.4</td></tr>
+    </table>
+    <div class="cap st">cumulative price response, % · month-clustered SEs · ** p&lt;0.01, * p&lt;0.05</div>
+  </div>
+</section>
+
+<!-- 31 · CONCLUSIONS -->
+<section class="slide" id="s31" data-anim="concl" data-notes="~35s. Conclusions. Ordinary shocks are a single-digit affair. The polycrisis is real but selective: bad rain during an oil spike multiplies — seven extra points beyond the sum. Bad rain during a weak currency merely adds. And the great catastrophes in the dataset — Pakistan 2008 and 2022-23, Bangladesh 2008 — are exactly the months this arithmetic breaks down.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 5.1 · What the data represents</div>
+    <h2 class="st" style="max-width:24ch">The polycrisis is real — <span style="color:var(--oil)">but selective</span></h2>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><div class="n" style="color:var(--flood)">1×</div><p>ordinary shocks: single-digit percentages over a year — survivable</p></div>
+      <div class="card st" style="border-color:rgba(255,93,59,.4)"><div class="n" style="color:var(--oil)">×</div><p>drought × oil spike <b>multiplies</b> — +7 pp beyond the sum of parts</p></div>
+      <div class="card st"><div class="n" style="color:var(--fx)">+</div><p>drought × weak currency <b>merely adds</b> — no interaction at any horizon</p></div>
+    </div>
+    <div class="takeaway st">Pakistan 2008 &amp; 2022-23, Bangladesh 2008 — the catastrophes are exactly <b>the months the arithmetic stops being additive</b>.</div>
+  </div>
+</section>
+
+<!-- 32 · POLICY -->
+<section class="slide" id="s32" data-anim="cards" data-notes="~35s. For a policymaker or a manager: watch the pairs, not the variables. A rainfall anomaly during a Brent spike is a red alert — fuel price policy doubles as drought policy, so keep strategic fuel access in a bad monsoon. A miller with dollar costs and rupee income should hedge. And a procurement team should treat drought-during-oil-spike months as forward-purchasing alarms.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 5.2 · What a policymaker or manager should take</div>
+    <h2 class="st">Watch the pairs, not the variables</h2>
+    <div class="cards c3" style="margin-top:1vh">
+      <div class="card st"><span class="tag" style="color:var(--oil)">Food ministry</span><h3>Fuel policy = drought policy</h3><p>the multiplier passes through oil — maintain strategic fuel access during a bad monsoon</p></div>
+      <div class="card st"><span class="tag" style="color:var(--fx)">Miller / importer</span><h3>Hedge the currency</h3><p>dollar costs against rupee income is the classic staple-market risk position</p></div>
+      <div class="card st"><span class="tag" style="color:var(--drought)">Procurement team</span><h3>Red-alert months</h3><p>drought + expensive oil = forward-purchasing alarm, every time</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 33 · LIMITATIONS -->
+<section class="slide" id="s33" data-anim="chips" data-notes="~30s. Limitations, honestly. Three countries are not enough — we compare systems, not just numbers. The 2022 flood was not just any rainy month — shock intensity may be nonlinear. National averages hide district-level damage. Depreciation is not randomly assigned — it carries everything happening at the time. And two minor data issues — early price gaps in Pakistan and India, and Bangladesh soil water — are disclosed, and the main results don’t depend on them.">
+  <div class="slide-inner">
+    <div class="kicker st">Section 5.3 · Limitations</div>
+    <h2 class="st">What this paper does <span style="color:var(--muted)">not</span> claim</h2>
+    <div class="chiprow st" style="max-width:1000px;gap:1.2vh 1vw">
+      <span class="chip">3 countries → we compare systems, not just numbers</span>
+      <span class="chip">the 2022 flood was not “any rainy month” — intensity may be nonlinear</span>
+      <span class="chip">national means hide district-level damage</span>
+      <span class="chip">depreciation is not randomly assigned — read as total episode effect</span>
+      <span class="chip">two minor data issues disclosed; main results unaffected</span>
+    </div>
+  </div>
+</section>
+
+<!-- 34 · THANK YOU -->
+<section class="slide" id="s34" data-anim="title" data-notes="~15s. Thank you — we welcome your questions.">
+  <div class="slide-inner">
+    <div class="kicker st">Thank you</div>
+    <h1 class="st">Questions &amp; feedback welcome</h1>
+    <div class="rule st"></div>
+    <div class="sub st">When Crises Collide — Group 04 · Ehsanul Mahbub Jobayer · Mohammad Faysal Rahman · Nayeem Hasan · Md. Hasan Safkat Rasif</div>
+    <div class="chiprow st"><span class="chip">E501 Managerial Economics</span><span class="chip">IBA, University of Dhaka</span><span class="chip amber">full replication code in Appendix A</span></div>
+  </div>
+</section>
+
+<div id="counter">1 / 35</div>
+<div id="hint">← → navigate · F fullscreen · N notes</div>
+<div id="notes"><div class="nh">SPEAKER NOTES</div><div id="notes-body"></div></div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+(function(){
+"use strict";
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length;
+let cur=-1, tl=null;
+
+/* ---------- helpers ---------- */
+const q=(s,r)=>(r||document).querySelector(s);
+const qa=(s,r)=>[...(r||document).querySelectorAll(s)];
+function countUp(el,dur){
+  const to=parseFloat(el.dataset.to),dec=parseInt(el.dataset.dec||0),o={v:0};
+  gsap.to(o,{v:to,duration:dur||1.3,ease:"power2.out",onUpdate:()=>el.textContent=o.v.toFixed(dec)});
+}
+function baseIn(slide,t,sel,stag){
+  const els=qa(sel||'.st',slide).filter(e=>!e.closest('.terminal')&&!e.closest('.dtable'));
+  if(els.length)t.fromTo(els,{y:26,autoAlpha:0},{y:0,autoAlpha:1,duration:.7,ease:"power3.out",stagger:stag||.09},.05);
+  return t;
+}
+function drawChart(slide,t){
+  const card=q('.reveal-x',slide);
+  if(card)t.fromTo(card,{clipPath:"inset(0 100% 0 0)"},{clipPath:"inset(0 0% 0 0)",duration:1.15,ease:"power3.inOut"},.1);
+}
+
+/* ---------- rain particles (fig 5) ---------- */
+function makeRain(canvas){
+  const ctx=canvas.getContext('2d');let raf=null;
+  function run(){
+    const p=canvas.parentElement;canvas.width=p.clientWidth;canvas.height=p.clientHeight;
+    const drops=Array.from({length:110},()=>({x:Math.random()*canvas.width,y:Math.random()*-canvas.height,l:8+Math.random()*14,v:6+Math.random()*7,o:.15+Math.random()*.35}));
+    const t0=performance.now();
+    (function frame(now){
+      const el=(now-t0)/1000;ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.globalAlpha=el>2.4?Math.max(0,1-(el-2.4)/0.8):1;
+      ctx.strokeStyle='#2f8fb8';ctx.lineWidth=1.4;
+      for(const d of drops){d.y+=d.v;if(d.y>canvas.height){d.y=-20;d.x=Math.random()*canvas.width;}
+        ctx.globalAlpha*=1;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x-2,d.y+d.l);ctx.stroke();}
+      if(el<3.4)raf=requestAnimationFrame(frame);else ctx.clearRect(0,0,canvas.width,canvas.height);
+    })(t0);
+  }
+  return {start(){if(raf)cancelAnimationFrame(raf);run();}};
+}
+
+/* ---------- collision burst (multiplier) ---------- */
+function burst(canvas){
+  const ctx=canvas.getContext('2d');const p=canvas.parentElement;
+  canvas.width=p.clientWidth;canvas.height=p.clientHeight;
+  const cx=canvas.width/2,cy=canvas.height/2;
+  const parts=Array.from({length:120},()=>{const a=Math.random()*Math.PI*2,s=2+Math.random()*9;
+    return{x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,r:2+Math.random()*4,
+      c:['#f5c542','#ff5d3b','#f0a83c','#fff3d6'][Math.random()*4|0],life:1};});
+  const t0=performance.now();
+  (function frame(now){
+    const el=(now-t0)/1000;ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const pt of parts){pt.x+=pt.vx;pt.y+=pt.vy;pt.vy+=.18;pt.life-=.012;
+      if(pt.life<=0)continue;ctx.globalAlpha=Math.max(0,pt.life);
+      ctx.fillStyle=pt.c;ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r,0,7);ctx.fill();}
+    if(el<1.6)requestAnimationFrame(frame);else ctx.clearRect(0,0,canvas.width,canvas.height);
+  })(t0);
+}
+
+/* ---------- per-slide enter animations ---------- */
+const anims={
+  fade(slide){const t=gsap.timeline();return baseIn(slide,t),t;},
+  title(slide){
+    const t=gsap.timeline();
+    const bg=q('.title-bg',slide);
+    if(bg)t.fromTo(bg,{scale:1.12,opacity:0},{scale:1,opacity:.5,duration:2.2,ease:"power2.out"},0)
+      .to(bg,{scale:1.09,duration:14,ease:"none"},2.2);
+    return baseIn(slide,t,'.st',.14),t;
+  },
+  cards(slide){
+    const t=gsap.timeline();
+    const cards=qa('.card',slide),rest=qa('.st',slide).filter(e=>!e.classList.contains('card'));
+    if(rest.length)t.fromTo(rest,{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.6,ease:"power3.out",stagger:.08},0);
+    if(cards.length)t.fromTo(cards,{y:46,autoAlpha:0,rotateX:12},{y:0,autoAlpha:1,rotateX:0,duration:.8,ease:"back.out(1.4)",stagger:.13},.25);
+    return t;
+  },
+  converge(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'h2, .kicker');
+    const a=q('.orb-a',slide),b=q('.orb-b',slide),c=q('.orb-c',slide),chip=q('#poly-chip',slide);
+    t.fromTo(a,{scale:0,autoAlpha:0},{scale:1,autoAlpha:1,duration:.7,ease:"back.out(1.6)"},.2)
+     .fromTo(b,{x:-260,autoAlpha:0,rotate:-40},{x:-170,autoAlpha:1,rotate:0,duration:.8,ease:"power3.out"},.6)
+     .fromTo(c,{x:260,autoAlpha:0,rotate:40},{x:170,autoAlpha:1,rotate:0,duration:.8,ease:"power3.out"},.85)
+     .to([b,c],{scale:1.06,duration:.35,yoyo:true,repeat:1,ease:"power1.inOut"},1.8)
+     .fromTo(chip,{autoAlpha:0,y:14},{autoAlpha:1,y:0,duration:.6},2.3);
+    return t;
+  },
+  divider(slide){
+    const t=gsap.timeline();
+    t.fromTo(q('.act-num',slide),{scale:1.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.9,ease:"power4.out"},0)
+     .fromTo(q('.act-word',slide),{y:34,autoAlpha:0},{y:0,autoAlpha:1,duration:.7,ease:"power3.out"},.3)
+     .fromTo(q('.sub',slide),{autoAlpha:0},{autoAlpha:1,duration:.6},.7);
+    return t;
+  },
+  sources(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2',.12);
+    t.fromTo(qa('.src',slide),{x:-40,autoAlpha:0},{x:0,autoAlpha:1,duration:.6,ease:"power3.out",stagger:.1},.3);
+    return t;
+  },
+  pipe(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2',.1);
+    t.fromTo(qa('.step',slide),{y:30,autoAlpha:0,scale:.92},{y:0,autoAlpha:1,scale:1,duration:.55,ease:"back.out(1.5)",stagger:.22},.2)
+     .fromTo(qa('.arrow',slide),{autoAlpha:0,scale:.4},{autoAlpha:1,scale:1,duration:.3,stagger:.22},.45)
+     .fromTo(qa('.chiprow .chip',slide),{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.4,stagger:.1},1.6);
+    return t;
+  },
+  codemorph(slide){
+    const t=gsap.timeline();
+    const lines=qa('.tl',slide),box=q('#codebox',slide),table=q('#datatable',slide),cap=q('#codemorph-cap',slide);
+    baseIn(slide,t,'.kicker',0);
+    t.set(table,{autoAlpha:0,y:20,scale:.96},0).set(cap,{autoAlpha:0},0)
+     .set(box,{autoAlpha:1,scale:1,y:0},0).set(lines,{autoAlpha:0},0)
+     .to(lines,{autoAlpha:1,duration:.05,stagger:.32},.3);
+    const rows=qa('tr',table);
+    t.to(box,{scale:.9,y:-26,autoAlpha:0,duration:.8,ease:"power2.in"},"+=0.7")
+     .to(table,{autoAlpha:1,y:0,scale:1,duration:.7,ease:"power3.out"},"-=0.25")
+     .fromTo(rows,{autoAlpha:0,x:-18},{autoAlpha:1,x:0,duration:.4,stagger:.09},"-=0.35")
+     .to(cap,{autoAlpha:1,duration:.5});
+    return t;
+  },
+  video(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2, .chiprow',.1);
+    t.fromTo(q('.video-shell',slide),{scale:.94,autoAlpha:0},{scale:1,autoAlpha:1,duration:.9,ease:"power3.out"},.2);
+    return t;
+  },
+  bars(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2, .chiprow',.1);
+    qa('.bar-row',slide).forEach((row,i)=>{
+      t.fromTo(row,{autoAlpha:0,x:-24},{autoAlpha:1,x:0,duration:.5},.25+i*.2);
+      const fill=q('.bar-fill',row);
+      t.fromTo(fill,{width:"0%"},{width:fill.dataset.w+"%",duration:.9,ease:"power3.out"},.4+i*.2);
+    });
+    return t;
+  },
+  draw(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker',0);
+    drawChart(slide,t);
+    const rest=qa('.st',slide).filter(e=>!e.classList.contains('reveal-x'));
+    if(rest.length)t.fromTo(rest,{y:20,autoAlpha:0},{y:0,autoAlpha:1,duration:.55,stagger:.09},.9);
+    return t;
+  },
+  brent(slide){
+    const t=anims.draw(slide);
+    t.fromTo(qa('.ep',slide),{scale:.5,autoAlpha:0},{scale:1,autoAlpha:1,duration:.45,ease:"back.out(2)",stagger:.18},1.1);
+    return t;
+  },
+  fao(slide){
+    const t=anims.draw(slide);
+    const rec=q('#fao-record',slide);
+    t.fromTo(rec,{scale:.6,autoAlpha:0},{scale:1,autoAlpha:1,duration:.5,ease:"back.out(2)"},1.2)
+     .to(rec,{scale:1.12,duration:.3,yoyo:true,repeat:3,ease:"power1.inOut"},1.8);
+    return t;
+  },
+  fx(slide){
+    const t=anims.draw(slide);
+    t.fromTo(qa('.fxchip',slide),{y:24,autoAlpha:0},{y:0,autoAlpha:1,duration:.5,stagger:.16},1.0);
+    return t;
+  },
+  rain(slide){
+    const t=anims.draw(slide);
+    const rc=q('#raincanvas',slide);
+    if(rc)t.call(makeRain(rc).start,null,1.0);
+    return t;
+  },
+  strikes(slide){
+    const t=anims.draw(slide);
+    const chips=qa('.strike',slide);
+    t.fromTo(chips,{y:-30,autoAlpha:0},{y:0,autoAlpha:1,duration:.5,ease:"back.out(1.6)",stagger:.15},1.0);
+    qa('.cnt',slide).forEach((c,i)=>t.call(()=>countUp(c,1.1),null,1.15+i*.15));
+    return t;
+  },
+  method(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2',.1);
+    t.fromTo(q('.card',slide),{autoAlpha:0,y:24},{autoAlpha:1,y:0,duration:.6},.2)
+     .fromTo(qa('.eqp',slide),{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:.4,stagger:.18},.5)
+     .fromTo(qa('.chiprow .chip',slide),{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.4,stagger:.1},1.5)
+     .fromTo(q('.takeaway',slide),{autoAlpha:0},{autoAlpha:1,duration:.5},1.9);
+    return t;
+  },
+  bignum(slide){
+    const t=gsap.timeline();
+    t.fromTo(q('.kicker',slide),{autoAlpha:0},{autoAlpha:1,duration:.4},0)
+     .fromTo(q('h1',slide),{scale:.82,autoAlpha:0},{scale:1,autoAlpha:1,duration:.9,ease:"power4.out"},.15)
+     .fromTo(q('.sub',slide),{y:20,autoAlpha:0},{y:0,autoAlpha:1,duration:.6},.6);
+    return t;
+  },
+  collision(slide){
+    const t=gsap.timeline();
+    const stage=q('#collide-stage',slide),od=q('#orb-drought',slide),oo=q('#orb-oil',slide),
+          res=q('#mult-result',slide),nul=q('#mult-null',slide),inner=q('.slide-inner',slide);
+    const dx=()=>stage.clientWidth/2-od.offsetWidth/2;
+    t.set(stage,{clearProps:"height"},0)
+     .set([od,oo],{autoAlpha:1,x:0,scale:1,filter:"blur(0px)"},0)
+     .set([res,nul],{autoAlpha:0},0)
+     .fromTo(q('.kicker',slide),{autoAlpha:0},{autoAlpha:1,duration:.4},0);
+    t.fromTo(od,{x:()=>-stage.clientWidth*.75,filter:"blur(4px)"},{x:()=>dx(),filter:"blur(0px)",duration:1.5,ease:"power3.in"},.3)
+     .fromTo(oo,{x:()=>stage.clientWidth*.75,filter:"blur(4px)"},{x:()=>-dx(),filter:"blur(0px)",duration:1.5,ease:"power3.in"},.3);
+    t.call(()=>{
+      gsap.fromTo('#flash',{opacity:.5},{opacity:0,duration:.55});
+      gsap.fromTo('#ring1',{scale:.2,opacity:.9},{scale:9,opacity:0,duration:1,ease:"power2.out"});
+      gsap.fromTo('#ring2',{scale:.2,opacity:.7},{scale:7,opacity:0,duration:1.1,delay:.12,ease:"power2.out"});
+      burst(q('#burstcanvas',slide));
+      gsap.to(inner,{keyframes:[{x:14,y:-7},{x:-11,y:6},{x:7,y:-4},{x:-4,y:2},{x:0,y:0}],duration:.55,ease:"power1.out"});
+    },null,1.85);
+    t.to([od,oo],{scale:0,rotate:120,autoAlpha:0,duration:.5,ease:"power2.in"},1.95)
+     .to(stage,{height:70,duration:.7,ease:"power3.inOut"},2.05)
+     .to(res,{autoAlpha:1,duration:.5},2.35)
+     .call(()=>{const o={v:0},el=q('#mult-num',slide);
+        gsap.to(o,{v:7.1,duration:1.5,ease:"power2.out",onUpdate:()=>el.textContent=o.v.toFixed(1)});},null,2.5)
+     .to(nul,{autoAlpha:1,duration:.6},3.6);
+    return t;
+  },
+  chips(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2, .sub',.1);
+    t.fromTo(qa('.chip',slide),{scale:.7,autoAlpha:0},{scale:1,autoAlpha:1,duration:.5,ease:"back.out(1.7)",stagger:.11},.3);
+    return t;
+  },
+  table(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, .cap',.1);
+    t.fromTo(qa('#t5 tr',slide),{autoAlpha:0,x:-16},{autoAlpha:1,x:0,duration:.4,stagger:.07},.25);
+    return t;
+  },
+  concl(slide){
+    const t=gsap.timeline();
+    baseIn(slide,t,'.kicker, h2',.1);
+    t.fromTo(qa('.card',slide),{scale:.85,autoAlpha:0,y:30},{scale:1,autoAlpha:1,y:0,duration:.7,ease:"back.out(1.5)",stagger:.15},.3)
+     .fromTo(q('.takeaway',slide),{autoAlpha:0,y:14},{autoAlpha:1,y:0,duration:.5},1.0);
+    return t;
+  }
+};
+anims.cards=anims.cards; // alias clarity
+
+/* ---------- chrome ---------- */
+function updateChrome(){
+  q('#progress').style.width=(cur/(N-1)*100)+'%';
+  q('#counter').textContent=(cur+1)+' / '+N;
+  q('#notes-body').textContent=slides[cur].dataset.notes||'';
+}
+function go(i){
+  if(i<0||i>=N||i===cur)return;
+  const out=slides[cur],inn=slides[i];
+  cur=i;
+  if(tl)tl.kill();
+  if(out){out.classList.remove('active');gsap.to(out,{autoAlpha:0,duration:.28,overwrite:true});}
+  inn.classList.add('active');
+  gsap.fromTo(inn,{autoAlpha:0},{autoAlpha:1,duration:.4,overwrite:true});
+  tl=(anims[inn.dataset.anim]||anims.fade)(inn);
+  updateChrome();
+}
+
+/* ---------- input ---------- */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(cur+1);}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(N-1);
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});}
+  else if(e.key==='n'||e.key==='N'){q('#notes').classList.toggle('open');}
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('video,.video-shell,#notes,a,button,.dtable'))return;
+  const x=e.clientX/innerWidth;
+  go(x<0.25?cur-1:cur+1);
+});
+let tx=null;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  if(tx===null)return;const d=e.changedTouches[0].clientX-tx;
+  if(Math.abs(d)>60)go(d<0?cur+1:cur-1);tx=null;
+},{passive:true});
+
+/* ---------- video fallback ---------- */
+(function(){
+  const v=q('#demovid'),fb=q('#vidfallback');
+  function showFb(){fb.classList.add('show');}
+  v.addEventListener('error',showFb,true);
+  const src=v.querySelector('source');
+  if(src)src.addEventListener('error',showFb);
+  setTimeout(()=>{if(v.networkState===HTMLMediaElement.NETWORK_NO_SOURCE)showFb();},1500);
+})();
+
+/* ---------- boot ---------- */
+const start=parseInt(new URLSearchParams(location.search).get('s')||'0',10);
+go(isNaN(start)?0:Math.min(Math.max(start,0),N-1));
+})();
+</script>
+</body>
+</html>
